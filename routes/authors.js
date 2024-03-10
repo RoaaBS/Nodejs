@@ -1,6 +1,7 @@
 const express = require("express");
 const router= express.Router();
 const asyncHandler =require("express-async-handler");
+const bcrypt =require("bcryptjs");
 const {verifyTokenandAdmin}=require("../middleware/verifyToken");
 const { Author,validateUpdateAuthor,validateCreatAuthor } = require("../models/Author");
 
@@ -8,7 +9,8 @@ const { Author,validateUpdateAuthor,validateCreatAuthor } = require("../models/A
 
 router.get("/",asyncHandler(
     async(req,res)=>{
-     const authorList = await Author.find();
+        const{pageNumber}= req.query;
+     const authorList = await Author.find().skip().limit(2);
      res.status(200).json(authorList);
      
 }));
@@ -42,6 +44,7 @@ router.post("/", verifyTokenandAdmin,asyncHandler(async(req,res)=>{
     const author= new Author({
         firstName:req.body.firstName,
         lastname:req.body.lastname,
+        nationality:req.body.nationality,
        });
      
       const result= await author.save();
@@ -67,6 +70,7 @@ router.put("/:id",verifyTokenandAdmin,asyncHandler(async(req,res)=>{
         $set: {
             firstName:req.body.firstName,
             lastname:req.body.lastname,
+            nationality:req.body.nationality,
         }
     
        },{new:true});
